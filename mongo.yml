@@ -275,14 +275,14 @@ Resources:
       VpcId: !Ref VPC
       GroupDescription: MongoDB server management and access ports
       SecurityGroupIngress:
-      SecurityGroupIngress:
         - IpProtocol: tcp
-          FromPort: '0'
-          ToPort: '65535'
-          CidrIp: 0.0.0.0/0
-      SecurityGroupEgress:
-        - CidrIp: 0.0.0.0/0
-          IpProtocol: -1
+          FromPort: 27017
+          ToPort: 27030
+          SourceSecurityGroupId: !Ref MongoDBServerAccessSecurityGroup
+        - IpProtocol: tcp
+          FromPort: 28017
+          ToPort: 28017
+          SourceSecurityGroupId: !Ref MongoDBServerAccessSecurityGroup
 
   MongoDBServersSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -291,12 +291,17 @@ Resources:
       GroupDescription: MongoDB inter-server communication and management ports
       SecurityGroupIngress:
         - IpProtocol: tcp
-          FromPort: '0'
-          ToPort: '65535'
-          CidrIp: 0.0.0.0/0
-      SecurityGroupEgress:
-        - CidrIp: 0.0.0.0/0
-          IpProtocol: -1
+          FromPort: 22
+          ToPort: 22
+          SourceSecurityGroupId: !Ref MongoDBServerSecurityGroup
+        - IpProtocol: tcp
+          FromPort: 27017
+          ToPort: 27030
+          SourceSecurityGroupId: !Ref MongoDBServerSecurityGroup
+        - IpProtocol: tcp
+          FromPort: 28017
+          ToPort: 28017
+          SourceSecurityGroupId: !Ref MongoDBServerSecurityGroup
 
   MongoDBNodeIAMRole:
     Type: AWS::IAM::Role
